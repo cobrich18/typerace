@@ -1,17 +1,37 @@
-const texts = [
-  'Скорость приходит с практикой. Держи взгляд на дороге, чувствуй ритм клавиш и не позволяй ошибкам сбить тебя с пути.',
-  'Ночной город мелькает за окном. До финиша осталось совсем немного, а впереди ещё один поворот и шанс вырваться вперёд.',
-  'Каждая секунда имеет значение. Печатай уверенно, сохраняй спокойствие и набирай скорость на последнем участке трассы.',
-  'На старте все равны. Побеждает тот, кто умеет держать темп, быстро исправлять ошибки и не сдаваться до самого финиша.',
-  'Дождь стучит по стеклу, огни отражаются на мокром асфальте. Машина набирает ход, пока пальцы танцуют по клавиатуре.',
-  'Когда мотор ревёт и дорога зовёт вперёд, остаётся только одно: собраться, поймать ритм и пройти дистанцию без ошибок.'
-];
+const texts = {
+  ru: [
+    'Скорость приходит с практикой. Держи взгляд на дороге, чувствуй ритм клавиш и не позволяй ошибкам сбить тебя с пути.',
+    'Ночной город мелькает за окном. До финиша осталось совсем немного, а впереди еще один поворот и шанс вырваться вперед.',
+    'Каждая секунда имеет значение. Печатай уверенно, сохраняй спокойствие и набирай скорость на последнем участке трассы.',
+    'На старте все равны. Побеждает тот, кто умеет держать темп, быстро исправлять ошибки и не сдаваться до самого финиша.',
+    'Дождь стучит по стеклу, огни отражаются на мокром асфальте. Машина набирает ход, пока пальцы танцуют по клавиатуре.',
+    'Когда мотор ревет и дорога зовет вперед, остается только одно: собраться, поймать ритм и пройти дистанцию без ошибок.'
+  ],
+  en: [
+    'Speed comes with practice. Keep your eyes on the road, find the rhythm of the keys and do not let mistakes slow you down.',
+    'The city lights flash past the window. The finish line is close, but one last turn could change the whole race.',
+    'Every second counts. Type with confidence, stay calm and build your speed on the final stretch of the track.',
+    'Everyone starts together. The winner keeps a steady pace, learns from mistakes and never gives up before the finish.',
+    'Rain taps against the glass as the road glows under the streetlights. Your fingers move faster and the car picks up speed.',
+    'The engine hums and the open road calls. Take a breath, find your rhythm and race all the way to the finish.'
+  ],
+  kz: [
+    'Жылдамдық жаттығумен келеді. Жолға назар аудар, пернелердің ырғағын тап және қателікке жол берме.',
+    'Қала шамдары терезе сыртында жарқырайды. Мәре жақын қалды, ал соңғы бұрылыс жарыстың тағдырын шешеді.',
+    'Әр секунд маңызды. Сабыр сақта, мәтінді мұқият тер және жолдың соңғы бөлігінде жылдамдықты арттыр.',
+    'Бәрі бірдей бастайды. Жеңіске жету үшін тұрақты қарқын ұста, қателікті түзет және мәреге дейін тоқтама.',
+    'Жаңбыр әйнекке тырсылдайды, көше шамдары жолға шағылысады. Саусақтарың пернелерді басқан сайын көлік жүйткиді.',
+    'Алда ашық жол жатыр. Терең тыныс ал, өз ырғағыңды тап және мәреге сенімді түрде жет.'
+  ]
+};
+const languageNames = {ru: 'RU', en: 'ENG', kz: 'KAZ'};
+const layoutHints = {ru: 'Раскладка RU · правильные символы двигают тебя вперед', en: 'Раскладка ENG · правильные символы двигают тебя вперед', kz: 'Раскладка KAZ · используй казахскую кириллическую клавиатуру'};
 
 const $ = id => document.getElementById(id);
-const el = Object.fromEntries(['raceNumber','raceStatus','track','rivalPercent','playerPercent','rivalCar','playerCar','countdown','wpm','accuracy','mistakes','timer','prompt','typeInput','inputWrap','typingHint','typedCount','totalCount','startButton','newTextButton','difficulty','difficultyLabel','bestScore','soundButton','resultBackdrop','resultKicker','resultIcon','resultTitle','resultText','resultWpm','resultAccuracy','resultTime','againButton'].map(id => [id, $(id)]));
+const el = Object.fromEntries(['raceNumber','raceStatus','track','rivalPercent','playerPercent','rivalCar','playerCar','countdown','wpm','accuracy','mistakes','timer','prompt','typeInput','inputWrap','typingHint','typedCount','totalCount','startButton','newTextButton','language','languageLabel','difficulty','difficultyLabel','bestScore','soundButton','resultBackdrop','resultKicker','resultIcon','resultTitle','resultText','resultWpm','resultAccuracy','resultTime','againButton'].map(id => [id, $(id)]));
 const speeds = {easy: 33, medium: 48, hard: 65};
-const labels = {easy: 'ЛЁГКИЙ', medium: 'СРЕДНИЙ', hard: 'СЛОЖНЫЙ'};
-const state = {phase: 'ready', text: '', index: -1, correct: 0, errors: 0, startAt: 0, elapsed: 0, rival: 0, freezeUntil: 0, frame: 0, countdownTimer: null, raceNumber: 0, sound: false};
+const labels = {easy: 'ЛЕГКИЙ', medium: 'СРЕДНИЙ', hard: 'СЛОЖНЫЙ'};
+const state = {phase: 'ready', text: '', index: -1, textLanguage: null, correct: 0, errors: 0, startAt: 0, elapsed: 0, rival: 0, freezeUntil: 0, frame: 0, countdownTimer: null, raceNumber: 0, sound: false};
 let audioContext;
 
 function sound(freq, duration = .08, type = 'sine') {
@@ -72,32 +92,45 @@ function clearCountdown() {
   el.countdown.hidden = true;
 }
 
+function bestKey() { return `typerace-best-wpm-${el.language.value}`; }
+
+function updateBest() {
+  let best = 0;
+  try { best = Number(localStorage.getItem(bestKey()) || (el.language.value === 'ru' ? localStorage.getItem('typerace-best-wpm') : 0) || 0); } catch (_) { /* Local storage is optional. */ }
+  el.bestScore.textContent = best ? `${best} сл/мин` : '—';
+  return best;
+}
+
 function prepareText() {
   cancelAnimationFrame(state.frame);
   clearCountdown();
   state.phase = 'ready'; state.correct = 0; state.errors = 0; state.elapsed = 0; state.rival = 0; state.freezeUntil = 0;
+  const language = el.language.value;
+  const pool = texts[language];
+  if (state.textLanguage !== language) state.index = -1;
   let next = state.index;
-  while (next === state.index) next = Math.floor(Math.random() * texts.length);
-  state.index = next; state.text = texts[next];
+  while (next === state.index) next = Math.floor(Math.random() * pool.length);
+  state.index = next; state.text = pool[next]; state.textLanguage = language;
   el.typeInput.value = ''; el.typeInput.disabled = true;
   el.typeInput.placeholder = 'Нажми «Начать заезд», затем печатай здесь';
-  el.difficulty.disabled = false;
+  el.difficulty.disabled = false; el.language.disabled = false;
+  el.languageLabel.textContent = languageNames[language];
   el.difficultyLabel.textContent = labels[el.difficulty.value];
   el.totalCount.textContent = state.text.length;
   el.track.classList.remove('is-running');
   el.playerCar.classList.remove('penalty'); el.inputWrap.classList.remove('error');
-  el.typingHint.textContent = 'Правильные символы двигают тебя вперёд';
+  el.typingHint.textContent = layoutHints[language];
   el.startButton.querySelector('span').textContent = 'НАЧАТЬ ЗАЕЗД';
   el.startButton.disabled = false;
   setStatus('ОЖИДАНИЕ СТАРТА');
-  renderPrompt(); updateStats(); updateCars();
+  renderPrompt(); updateStats(); updateCars(); updateBest();
 }
 
 function beginCountdown() {
   if (state.phase !== 'ready') return;
   state.phase = 'countdown'; state.raceNumber++;
   el.raceNumber.textContent = `#${String(state.raceNumber).padStart(2, '0')}`;
-  el.difficulty.disabled = true; el.startButton.disabled = true;
+  el.difficulty.disabled = true; el.language.disabled = true; el.startButton.disabled = true;
   setStatus('ПРИГОТОВЬСЯ');
   let count = 3;
   const step = () => {
@@ -117,7 +150,7 @@ function startRace() {
   el.track.classList.add('is-running');
   el.typeInput.disabled = false; el.typeInput.placeholder = 'Печатай текст выше…'; el.typeInput.focus();
   el.typingHint.textContent = 'Держи темп — соперник уже едет!';
-  setStatus('ГОНКА ИДЁТ', 'running');
+  setStatus('ГОНКА ИДЕТ', 'running');
   state.frame = requestAnimationFrame(tick);
 }
 
@@ -140,14 +173,13 @@ function finish(won) {
   updateStats(); updateCars();
   setStatus(won ? 'ТЫ ПОБЕДИЛ!' : 'СОПЕРНИК ФИНИШИРОВАЛ', 'finished');
   sound(won ? 880 : 260, .22, won ? 'sine' : 'triangle');
-  let best = 0;
-  try { best = Number(localStorage.getItem('typerace-best-wpm') || 0); } catch (_) { /* Local storage is optional. */ }
+  const best = updateBest();
   const score = Number(el.wpm.textContent);
-  if (won && score > best) { try { localStorage.setItem('typerace-best-wpm', String(score)); } catch (_) { /* Keep the session record. */ } el.bestScore.textContent = `${score} сл/мин`; }
-  el.resultKicker.textContent = won ? 'ПОБЕДА · ФИНИШНАЯ ЧЕРТА' : 'ЗАЕЗД ЗАВЕРШЁН';
+  if (won && score > best) { try { localStorage.setItem(bestKey(), String(score)); } catch (_) { /* Keep the session record. */ } el.bestScore.textContent = `${score} сл/мин`; }
+  el.resultKicker.textContent = won ? 'ПОБЕДА · ФИНИШНАЯ ЧЕРТА' : 'ЗАЕЗД ЗАВЕРШЕН';
   el.resultIcon.textContent = won ? '🏆' : '🏁';
   el.resultTitle.textContent = won ? 'Ты первый!' : 'Почти догнал!';
-  el.resultText.textContent = won ? 'Отличный заезд. Сможешь побить свой рекорд?' : 'Соперник пришёл первым. Попробуй ещё раз и держи ровный темп.';
+  el.resultText.textContent = won ? 'Отличный заезд. Сможешь побить свой рекорд?' : 'Соперник пришел первым. Попробуй еще раз и держи ровный темп.';
   el.resultWpm.textContent = el.wpm.textContent;
   el.resultAccuracy.textContent = `${el.accuracy.textContent}%`;
   el.resultTime.textContent = el.timer.textContent;
@@ -182,11 +214,11 @@ function handleInput() {
 
 el.startButton.addEventListener('click', beginCountdown);
 el.newTextButton.addEventListener('click', prepareText);
+el.language.addEventListener('change', prepareText);
 el.difficulty.addEventListener('change', () => { el.difficultyLabel.textContent = labels[el.difficulty.value]; });
 el.typeInput.addEventListener('input', handleInput);
 el.typeInput.addEventListener('paste', event => event.preventDefault());
 el.againButton.addEventListener('click', () => { el.resultBackdrop.hidden = true; prepareText(); beginCountdown(); });
 el.soundButton.addEventListener('click', () => { state.sound = !state.sound; el.soundButton.setAttribute('aria-pressed', String(state.sound)); el.soundButton.querySelector('span').textContent = state.sound ? 'ЗВУК ВКЛ.' : 'ЗВУК ВЫКЛ.'; if (state.sound) sound(660); });
 window.addEventListener('resize', updateCars);
-try { const best = Number(localStorage.getItem('typerace-best-wpm') || 0); if (best) el.bestScore.textContent = `${best} сл/мин`; } catch (_) { /* Local storage is optional. */ }
 prepareText();

@@ -50,18 +50,18 @@
       </section>
 
       <section class="typing-card" aria-label="Текст для печати">
-        <div class="typing-head"><div><span class="section-index">01 / </span> ТЕКСТ ДЛЯ ЗАЕЗДА</div><span class="level-tag">RU · <span id="difficultyLabel">СРЕДНИЙ</span></span></div>
+        <div class="typing-head"><div><span class="section-index">01 / </span> ТЕКСТ ДЛЯ ЗАЕЗДА</div><span class="level-tag"><span id="languageLabel">RU</span> · <span id="difficultyLabel">СРЕДНИЙ</span></span></div>
         <div class="prompt" id="prompt" aria-live="off"></div>
         <div class="input-wrap" id="inputWrap"><span class="input-icon">⌨</span><input id="typeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" placeholder="Нажми «Начать заезд», затем печатай здесь" aria-label="Напечатайте показанный текст" disabled><span class="input-hint">↵</span></div>
-        <div class="typing-foot"><span id="typingHint">Правильные символы двигают тебя вперёд</span><span><b id="typedCount">0</b> / <span id="totalCount">0</span></span></div>
+        <div class="typing-foot"><span id="typingHint">Правильные символы двигают тебя вперед</span><span><b id="typedCount">0</b> / <span id="totalCount">0</span></span></div>
       </section>
 
       <div class="controls"><button class="start-button" id="startButton" type="button"><span>НАЧАТЬ ЗАЕЗД</span><span class="button-arrow">↗</span></button><button class="secondary-button" id="newTextButton" type="button">НОВЫЙ ТЕКСТ <span>↻</span></button></div>
-      <div class="bottom-row"><div><span class="mini-icon">✦</span> Рекорд: <strong id="bestScore">—</strong></div><label for="difficulty">СЛОЖНОСТЬ СОПЕРНИКА <select id="difficulty"><option value="easy">Лёгкая</option><option value="medium" selected>Средняя</option><option value="hard">Сложная</option></select></label></div>
+      <div class="bottom-row"><div><span class="mini-icon">✦</span> Рекорд: <strong id="bestScore">—</strong></div><div class="settings"><label for="language">ЯЗЫК ТЕКСТА <select id="language"><option value="ru">RU · Русский</option><option value="en">ENG · English</option><option value="kz">KAZ · Қазақша</option></select></label><label for="difficulty">СЛОЖНОСТЬ СОПЕРНИКА <select id="difficulty"><option value="easy">Легкая</option><option value="medium" selected>Средняя</option><option value="hard">Сложная</option></select></label></div></div>
     </main>
     <footer><span>TYPE<span class="brand-accent">RACE</span> / ПЕЧАТАЙ ДО ФИНИША</span><span>СДЕЛАНО ДЛЯ ЛЮБИТЕЛЕЙ СКОРОСТИ</span></footer>
   </div>
-  <div class="result-backdrop" id="resultBackdrop" hidden><div class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-kicker" id="resultKicker">ЗАЕЗД ЗАВЕРШЁН</div><div class="result-icon" id="resultIcon">🏁</div><h2 id="resultTitle">Финиш!</h2><p id="resultText"></p><div class="result-stats"><div><strong id="resultWpm">0</strong><span>СЛ/МИН</span></div><div><strong id="resultAccuracy">100%</strong><span>ТОЧНОСТЬ</span></div><div><strong id="resultTime">0.0</strong><span>СЕКУНД</span></div></div><button class="start-button" id="againButton" type="button"><span>ЕЩЁ ЗАЕЗД</span><span class="button-arrow">↗</span></button></div></div>
+  <div class="result-backdrop" id="resultBackdrop" hidden><div class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-kicker" id="resultKicker">ЗАЕЗД ЗАВЕРШЕН</div><div class="result-icon" id="resultIcon">🏁</div><h2 id="resultTitle">Финиш!</h2><p id="resultText"></p><div class="result-stats"><div><strong id="resultWpm">0</strong><span>СЛ/МИН</span></div><div><strong id="resultAccuracy">100%</strong><span>ТОЧНОСТЬ</span></div><div><strong id="resultTime">0.0</strong><span>СЕКУНД</span></div></div><button class="start-button" id="againButton" type="button"><span>ЕЩЕ ЗАЕЗД</span><span class="button-arrow">↗</span></button></div></div>
   <script src="app.js"></script>
 </body>
 </html>
