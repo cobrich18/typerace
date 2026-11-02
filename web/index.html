@@ -68,10 +68,10 @@
 
       <section class="online-card" aria-label="Онлайн гонка">
         <div class="online-head"><div><span class="section-index">03 / </span> ГОНКА С ДРУГОМ ИЛИ ОНЛАЙН</div><span class="online-badge">● LIVE</span></div>
-        <p>Создай комнату и отправь ссылку другу или найди соперника с такими же настройками. Аккаунт не нужен.</p>
+        <p>Создай комнату и отправь ссылку другу: он подключится автоматически, а гонка начнется, когда вас станет двое. Аккаунт не нужен.</p>
         <div class="online-form"><label>ТВОЕ ИМЯ <input id="playerName" type="text" maxlength="20" autocomplete="nickname" placeholder="Гонщик"></label><button id="createRoomButton" type="button">СОЗДАТЬ КОМНАТУ <span>↗</span></button><button id="quickMatchButton" type="button">БЫСТРЫЙ ПОИСК <span>⚡</span></button></div>
         <div class="join-form"><label for="roomCode">КОД КОМНАТЫ</label><input id="roomCode" type="text" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="ABC123"><button id="joinRoomButton" type="button">ВОЙТИ <span>→</span></button></div>
-        <div class="room-panel" id="roomPanel" hidden><div><strong id="roomStatus">Ожидание соперника</strong><span id="roomDetails">Код комнаты: —</span></div><button id="copyRoomButton" type="button">КОПИРОВАТЬ ССЫЛКУ</button><button id="leaveRoomButton" type="button">ВЫЙТИ</button></div>
+        <div class="room-panel" id="roomPanel" hidden><div><strong id="roomStatus" aria-live="polite">Ожидание соперника</strong><span id="roomDetails">Код комнаты: —</span></div><button id="copyRoomButton" type="button">КОПИРОВАТЬ ССЫЛКУ</button><button id="leaveRoomButton" type="button">ВЫЙТИ</button></div>
         <div class="online-message" id="onlineMessage" role="status" aria-live="polite"></div>
       </section>
 

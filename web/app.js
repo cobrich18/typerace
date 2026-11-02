@@ -51,7 +51,7 @@ const modeButtons = [...document.querySelectorAll('[data-mode]')];
 const speeds = {easy: 33, medium: 48, hard: 65};
 const labels = {easy: 'ЛЕГКИЙ', medium: 'СРЕДНИЙ', hard: 'СЛОЖНЫЙ'};
 const state = {phase: 'ready', mode: 'words', goal: 50, text: '', index: -1, textLanguage: null, correct: 0, errors: 0, startAt: 0, elapsed: 0, rival: 0, freezeUntil: 0, frame: 0, countdownTimer: null, raceNumber: 0, sound: false};
-const online = {code: null, token: null, role: null, room: null, pollTimer: null, syncTimer: null, busy: false, clockOffset: 0, manualStop: false};
+const online = {code: null, token: null, role: null, room: null, pollTimer: null, syncTimer: null, busy: false, connecting: false, clockOffset: 0, manualStop: false};
 let audioContext;
 
 function buildText(language, wordCount) {
@@ -119,10 +119,18 @@ function lockOnlineSettings(locked) {
   for (const control of [el.language, el.difficulty, el.goal, el.startButton, el.newTextButton, el.createRoomButton, el.quickMatchButton, el.joinRoomButton, ...modeButtons]) control.disabled = locked;
 }
 
+function showConnecting() {
+  state.phase = 'connecting';
+  lockOnlineSettings(true);
+  el.startButton.querySelector('span').textContent = 'ПОДКЛЮЧЕНИЕ...';
+  el.typingHint.textContent = 'Подключаемся к онлайн-комнате';
+  onlineMessage('Подключаемся к комнате...');
+}
+
 function clearOnline() {
   clearInterval(online.pollTimer); clearTimeout(online.syncTimer);
   if (online.code) { try { sessionStorage.removeItem(`typerace-room-${online.code}`); } catch (_) {} }
-  online.code = null; online.token = null; online.role = null; online.room = null; online.pollTimer = null; online.manualStop = false;
+  online.code = null; online.token = null; online.role = null; online.room = null; online.pollTimer = null; online.manualStop = false; online.connecting = false;
   el.roomPanel.hidden = true; el.countdown.hidden = true; el.rivalName.textContent = 'СОПЕРНИК';
   lockOnlineSettings(false);
   onlineMessage('');
@@ -161,11 +169,14 @@ function applyOnlineRoom(room) {
   updateCars();
   if (room.status === 'waiting') {
     el.roomStatus.textContent = 'Ожидание соперника';
+    el.startButton.querySelector('span').textContent = 'ЖДЕМ СОПЕРНИКА';
+    el.typingHint.textContent = 'Друг подключится по ссылке, затем заезд начнется сам';
     setStatus('ЖДЕМ ВТОРОГО ИГРОКА');
     return;
   }
   if (room.status === 'running') {
     el.roomStatus.textContent = `Гонка с ${el.rivalName.textContent}`;
+    el.startButton.querySelector('span').textContent = 'ОНЛАЙН-ЗАЕЗД';
     if (state.phase === 'waiting') { state.phase = 'countdown'; state.raceNumber++; el.raceNumber.textContent = `#${String(state.raceNumber).padStart(2, '0')}`; }
     if (state.phase === 'countdown') {
       const left = room.startedAt - (Date.now() + online.clockOffset);
@@ -202,9 +213,9 @@ function activateOnline(room, token) {
 }
 
 async function enterOnline(action) {
-  if (online.code) return;
-  onlineMessage('Подключаемся...');
-  for (const control of [el.createRoomButton, el.quickMatchButton, el.joinRoomButton]) control.disabled = true;
+  if (online.code || online.connecting) return;
+  online.connecting = true;
+  showConnecting();
   const name = el.playerName.value.trim() || 'Гонщик';
   try {
     try { localStorage.setItem('typerace-player-name', name); } catch (_) { /* Name is optional session data. */ }
@@ -214,7 +225,11 @@ async function enterOnline(action) {
     onlineMessage(result.room.status === 'waiting' ? 'Поделись ссылкой с другом или жди соперника.' : 'Соперник найден. Стартуем вместе!');
   } catch (error) {
     onlineMessage(error.message, true);
-    for (const control of [el.createRoomButton, el.quickMatchButton, el.joinRoomButton]) control.disabled = false;
+    online.connecting = false;
+    state.phase = 'ready';
+    lockOnlineSettings(false);
+    el.startButton.querySelector('span').textContent = 'НАЧАТЬ ЗАЕЗД';
+    el.typingHint.textContent = layoutHints[el.language.value];
   }
 }
 
@@ -463,6 +478,10 @@ if (invitedCode && /^[A-Z2-9]{6}$/.test(invitedCode.toUpperCase())) {
   el.roomCode.value = invitedCode.toUpperCase();
   let token = null;
   try { token = sessionStorage.getItem(`typerace-room-${el.roomCode.value}`); } catch (_) {}
-  if (token) api(`/api/room/${el.roomCode.value}/state?token=${encodeURIComponent(token)}`).then(({room}) => activateOnline(room, token)).catch(() => onlineMessage('Введите имя и нажмите «Войти», чтобы присоединиться.'));
-  else onlineMessage('Введите имя и нажмите «Войти», чтобы присоединиться к комнате.');
+  if (token) {
+    showConnecting();
+    api(`/api/room/${el.roomCode.value}/state?token=${encodeURIComponent(token)}`)
+      .then(({room}) => activateOnline(room, token))
+      .catch(() => { state.phase = 'ready'; lockOnlineSettings(false); enterOnline('join'); });
+  } else enterOnline('join');
 }
