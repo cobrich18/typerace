@@ -23,6 +23,10 @@ try {
   assert.equal(join.status, 200);
   const joined = await join.json();
   assert.equal(joined.room.guestName, 'Друг');
+  assert.equal(joined.room.status, 'ready');
+  const start = await fetch(`${base}/api/room/${created.room.code}/start`, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({token:created.token})});
+  assert.equal(start.status, 200);
+  assert.equal((await start.json()).room.status, 'running');
   console.log('Render HTTP server and shared room flow passed');
 } finally {
   server.kill('SIGTERM');

@@ -49,6 +49,8 @@
         </div>
       </section>
 
+      <div class="controls"><button class="start-button" id="startButton" type="button"><span>НАЧАТЬ ЗАЕЗД</span><span class="button-arrow">↗</span></button><button class="secondary-button" id="newTextButton" type="button">НОВЫЙ ТЕКСТ <span>↻</span></button><button class="finish-button" id="finishButton" type="button" hidden>ЗАВЕРШИТЬ ЗАЕЗД <span>■</span></button></div>
+
       <section class="typing-card" aria-label="Текст для печати">
         <div class="typing-head"><div><span class="section-index">01 / </span> ТЕКСТ ДЛЯ ЗАЕЗДА</div><span class="level-tag"><span id="languageLabel">RU</span> · <span id="difficultyLabel">СРЕДНИЙ</span></span></div>
         <div class="prompt" id="prompt" aria-live="off"></div>
@@ -63,19 +65,18 @@
           <button class="mode-button" type="button" data-mode="time" aria-pressed="false">НА ВРЕМЯ</button>
           <button class="mode-button" type="button" data-mode="free" aria-pressed="false">СВОБОДНЫЙ</button>
         </div>
-        <div class="mode-detail"><label for="goal" id="goalLabel">ДИСТАНЦИЯ <select id="goal"><option value="25">25 слов</option><option value="50" selected>50 слов</option><option value="100">100 слов</option><option value="200">200 слов</option></select></label><span id="modeHint">Кто первым напечатает заданное число слов?</span><strong id="remaining" aria-live="off">50 слов</strong></div>
+        <div class="mode-detail"><label for="goal" id="goalLabel">ДИСТАНЦИЯ <select id="goal"><option value="25">25 слов</option><option value="50" selected>50 слов</option><option value="100">100 слов</option><option value="200">200 слов</option></select></label><span id="modeHint">Финиш: первый, кто напечатает все слова.</span><strong id="remaining" aria-live="off">50 слов</strong></div>
       </section>
 
       <section class="online-card" aria-label="Онлайн гонка">
         <div class="online-head"><div><span class="section-index">03 / </span> ГОНКА С ДРУГОМ ИЛИ ОНЛАЙН</div><span class="online-badge">● LIVE</span></div>
-        <p>Создай комнату и отправь ссылку другу: он подключится автоматически, а гонка начнется, когда вас станет двое. Аккаунт не нужен.</p>
+        <p>Создай комнату и отправь ссылку другу. Когда он подключится, создатель начнет гонку кнопкой под трассой. Аккаунт не нужен.</p>
         <div class="online-form"><label>ТВОЕ ИМЯ <input id="playerName" type="text" maxlength="20" autocomplete="nickname" placeholder="Гонщик"></label><button id="createRoomButton" type="button">СОЗДАТЬ КОМНАТУ <span>↗</span></button><button id="quickMatchButton" type="button">БЫСТРЫЙ ПОИСК <span>⚡</span></button></div>
         <div class="join-form"><label for="roomCode">КОД КОМНАТЫ</label><input id="roomCode" type="text" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="ABC123"><button id="joinRoomButton" type="button">ВОЙТИ <span>→</span></button></div>
         <div class="room-panel" id="roomPanel" hidden><div><strong id="roomStatus" aria-live="polite">Ожидание соперника</strong><span id="roomDetails">Код комнаты: —</span></div><button id="copyRoomButton" type="button">КОПИРОВАТЬ ССЫЛКУ</button><button id="leaveRoomButton" type="button">ВЫЙТИ</button></div>
         <div class="online-message" id="onlineMessage" role="status" aria-live="polite"></div>
       </section>
 
-      <div class="controls"><button class="start-button" id="startButton" type="button"><span>НАЧАТЬ ЗАЕЗД</span><span class="button-arrow">↗</span></button><button class="secondary-button" id="newTextButton" type="button">НОВЫЙ ТЕКСТ <span>↻</span></button><button class="finish-button" id="finishButton" type="button" hidden>ЗАВЕРШИТЬ ЗАЕЗД <span>■</span></button></div>
       <div class="bottom-row"><div><span class="mini-icon">✦</span> Рекорд: <strong id="bestScore">—</strong></div><div class="settings"><label for="language">ЯЗЫК ТЕКСТА <select id="language"><option value="ru">RU · Русский</option><option value="en">ENG · English</option><option value="kz">KAZ · Қазақша</option></select></label><label for="difficulty">СЛОЖНОСТЬ СОПЕРНИКА <select id="difficulty"><option value="easy">Легкая</option><option value="medium" selected>Средняя</option><option value="hard">Сложная</option></select></label></div></div>
     </main>
     <footer><span>TYPE<span class="brand-accent">RACE</span> / ПЕЧАТАЙ ДО ФИНИША</span><span>СДЕЛАНО ДЛЯ ЛЮБИТЕЛЕЙ СКОРОСТИ</span></footer>

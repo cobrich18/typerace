@@ -51,7 +51,7 @@ const modeButtons = [...document.querySelectorAll('[data-mode]')];
 const speeds = {easy: 33, medium: 48, hard: 65};
 const labels = {easy: 'ЛЕГКИЙ', medium: 'СРЕДНИЙ', hard: 'СЛОЖНЫЙ'};
 const state = {phase: 'ready', mode: 'words', goal: 50, text: '', index: -1, textLanguage: null, correct: 0, errors: 0, startAt: 0, elapsed: 0, rival: 0, freezeUntil: 0, frame: 0, countdownTimer: null, raceNumber: 0, sound: false};
-const online = {code: null, token: null, role: null, room: null, pollTimer: null, syncTimer: null, busy: false, connecting: false, clockOffset: 0, manualStop: false};
+const online = {code: null, token: null, role: null, room: null, pollTimer: null, syncTimer: null, busy: false, connecting: false, clockOffset: 0};
 let audioContext;
 
 function buildText(language, wordCount) {
@@ -72,7 +72,7 @@ function buildText(language, wordCount) {
 function playerProgress() {
   if (state.mode === 'words') return state.correct / state.text.length;
   if (state.mode === 'time') return Math.min(1, state.correct / (state.goal * speeds[el.difficulty.value] * 5 / 60));
-  return Math.min(1, state.correct / 1500);
+  return Math.min(1, state.correct / state.text.length);
 }
 
 function updateRemaining() {
@@ -83,7 +83,8 @@ function updateRemaining() {
     const completed = state.correct === state.text.length ? state.goal : prefix.split(/\s+/).length - 1;
     el.remaining.textContent = `${Math.max(0, state.goal - completed)} слов осталось`;
   } else {
-    el.remaining.textContent = `${Math.floor(state.elapsed / 1000)} сек в пути`;
+    const completed = state.correct === state.text.length ? 1200 : state.text.slice(0, state.correct).split(/\s+/).length - 1;
+    el.remaining.textContent = `${Math.max(0, completed)} / 1200 слов`;
   }
 }
 
@@ -99,7 +100,7 @@ function setMode(mode) {
   el.goal.hidden = mode === 'free';
   el.goalLabel.hidden = mode === 'free';
   el.goal.innerHTML = mode === 'time' ? '<option value="30">30 секунд</option><option value="60" selected>60 секунд</option><option value="120">120 секунд</option>' : '<option value="25">25 слов</option><option value="50" selected>50 слов</option><option value="100">100 слов</option><option value="200">200 слов</option>';
-  el.modeHint.textContent = mode === 'time' ? 'Печатай до конца таймера и обгони соперника.' : mode === 'words' ? 'Кто первым напечатает заданное число слов?' : 'Печатай сколько хочешь и заверши заезд вручную.';
+  el.modeHint.textContent = mode === 'time' ? 'Финиш по таймеру: больше верных символов побеждает. Весь текст — досрочный финиш.' : mode === 'words' ? 'Финиш: первый, кто напечатает все слова.' : 'Создатель завершает вручную, побеждает тот, кто впереди. Лимит — 1200 слов.';
   prepareText();
 }
 
@@ -130,7 +131,7 @@ function showConnecting() {
 function clearOnline() {
   clearInterval(online.pollTimer); clearTimeout(online.syncTimer);
   if (online.code) { try { sessionStorage.removeItem(`typerace-room-${online.code}`); } catch (_) {} }
-  online.code = null; online.token = null; online.role = null; online.room = null; online.pollTimer = null; online.manualStop = false; online.connecting = false;
+  online.code = null; online.token = null; online.role = null; online.room = null; online.pollTimer = null; online.connecting = false;
   el.roomPanel.hidden = true; el.countdown.hidden = true; el.rivalName.textContent = 'СОПЕРНИК';
   lockOnlineSettings(false);
   onlineMessage('');
@@ -157,7 +158,7 @@ function rivalProgress(room) {
   const characters = room.role === 'host' ? room.guestProgress : room.hostProgress;
   if (room.mode === 'words') return characters / room.text.length;
   if (room.mode === 'time') return Math.min(1, characters / (room.goal * speeds[room.difficulty] * 5 / 60));
-  return Math.min(1, characters / 1500);
+  return Math.min(1, characters / room.text.length);
 }
 
 function applyOnlineRoom(room) {
@@ -169,13 +170,23 @@ function applyOnlineRoom(room) {
   updateCars();
   if (room.status === 'waiting') {
     el.roomStatus.textContent = 'Ожидание соперника';
+    el.startButton.disabled = true;
     el.startButton.querySelector('span').textContent = 'ЖДЕМ СОПЕРНИКА';
-    el.typingHint.textContent = 'Друг подключится по ссылке, затем заезд начнется сам';
+    el.typingHint.textContent = 'Друг подключится по ссылке, затем создатель начнет заезд';
     setStatus('ЖДЕМ ВТОРОГО ИГРОКА');
+    return;
+  }
+  if (room.status === 'ready') {
+    el.roomStatus.textContent = `${el.rivalName.textContent} подключился · готов к старту`;
+    el.startButton.disabled = room.role !== 'host';
+    el.startButton.querySelector('span').textContent = room.role === 'host' ? 'НАЧАТЬ ОНЛАЙН-ЗАЕЗД' : 'ЖДЕМ СТАРТА СОЗДАТЕЛЯ';
+    el.typingHint.textContent = room.role === 'host' ? 'Нажми кнопку под трассой, когда оба готовы' : 'Создатель комнаты запустит заезд';
+    setStatus(room.role === 'host' ? 'СОПЕРНИК ГОТОВ' : 'ЖДЕМ СТАРТА');
     return;
   }
   if (room.status === 'running') {
     el.roomStatus.textContent = `Гонка с ${el.rivalName.textContent}`;
+    el.startButton.disabled = true;
     el.startButton.querySelector('span').textContent = 'ОНЛАЙН-ЗАЕЗД';
     if (state.phase === 'waiting') { state.phase = 'countdown'; state.raceNumber++; el.raceNumber.textContent = `#${String(state.raceNumber).padStart(2, '0')}`; }
     if (state.phase === 'countdown') {
@@ -187,7 +198,7 @@ function applyOnlineRoom(room) {
   }
   el.roomStatus.textContent = 'Заезд завершен';
   if (state.phase === 'waiting' || state.phase === 'countdown') { clearCountdown(); state.phase = 'running'; state.startAt = performance.now(); }
-  if (state.phase === 'running') finish(online.manualStop ? 'stopped' : room.winner === 'tie' ? 'tie' : room.winner === online.role ? 'won' : 'lost');
+  if (state.phase === 'running') finish(room.winner === 'tie' ? 'tie' : room.winner === online.role ? 'won' : 'lost');
 }
 
 async function pollRoom() {
@@ -196,6 +207,7 @@ async function pollRoom() {
   try {
     const {room} = await api(`/api/room/${online.code}/state?token=${encodeURIComponent(online.token)}`);
     applyOnlineRoom(room);
+    if (room.status === 'running' && state.phase === 'running' && state.correct === state.text.length) scheduleProgress();
     onlineMessage('');
   } catch (error) { onlineMessage(error.message, true); }
   finally { online.busy = false; }
@@ -222,7 +234,7 @@ async function enterOnline(action) {
     const data = action === 'join' ? {action, name, code: el.roomCode.value.trim().toUpperCase()} : {action, name, mode: state.mode, goal: state.goal, language: el.language.value, difficulty: el.difficulty.value, text: state.text};
     const result = await api('/api/room', {method: 'POST', headers: {'content-type':'application/json'}, body: JSON.stringify(data)});
     activateOnline(result.room, result.token);
-    onlineMessage(result.room.status === 'waiting' ? 'Поделись ссылкой с другом или жди соперника.' : 'Соперник найден. Стартуем вместе!');
+    onlineMessage(result.room.status === 'waiting' ? 'Поделись ссылкой с другом или жди соперника.' : 'Соперник найден. Создатель комнаты может начать заезд.');
   } catch (error) {
     onlineMessage(error.message, true);
     online.connecting = false;
@@ -244,13 +256,26 @@ function scheduleProgress() {
   }, 90);
 }
 
-async function stopOnline(manual = true) {
+async function stopOnline() {
   if (!online.code) return;
-  online.manualStop = manual;
+  if (online.role !== 'host') return;
   try {
     const {room} = await api(`/api/room/${online.code}/finish`, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({token:online.token})});
     applyOnlineRoom(room);
   } catch (error) { onlineMessage(error.message, true); }
+}
+
+async function startOnline() {
+  if (!online.code || online.role !== 'host' || online.room?.status !== 'ready') return;
+  el.startButton.disabled = true;
+  onlineMessage('Запускаем заезд...');
+  try {
+    const {room} = await api(`/api/room/${online.code}/start`, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({token:online.token})});
+    applyOnlineRoom(room);
+  } catch (error) {
+    onlineMessage(error.message, true);
+    if (online.room?.status === 'ready') el.startButton.disabled = false;
+  }
 }
 
 function sound(freq, duration = .08, type = 'sine') {
@@ -272,13 +297,14 @@ function escapeHTML(value) {
 }
 
 function renderPrompt() {
-  const before = escapeHTML(state.text.slice(0, state.correct));
+  const start = Math.max(0, state.correct - 65);
+  const end = Math.min(state.text.length, state.correct + 300);
+  const before = (start ? '… ' : '') + escapeHTML(state.text.slice(start, state.correct));
   const current = state.correct < state.text.length ? `<span class="current">${escapeHTML(state.text[state.correct])}</span>` : '';
-  const after = escapeHTML(state.text.slice(state.correct + 1));
+  const after = escapeHTML(state.text.slice(state.correct + 1, end)) + (end < state.text.length ? ' …' : '');
   el.prompt.innerHTML = `<span class="done">${before}</span>${current}<span class="pending">${after}</span>`;
   el.typedCount.textContent = state.correct;
-  const cursor = el.prompt.querySelector('.current');
-  if (cursor) el.prompt.scrollTop = Math.max(0, cursor.offsetTop - el.prompt.offsetTop - 38);
+  el.prompt.scrollTop = 0;
 }
 
 function setStatus(label, kind = '') {
@@ -329,7 +355,7 @@ function prepareText() {
   state.phase = 'ready'; state.correct = 0; state.errors = 0; state.elapsed = 0; state.rival = 0; state.freezeUntil = 0;
   const language = el.language.value;
   state.goal = state.mode === 'free' ? 0 : Number(el.goal.value);
-  const wordCount = state.mode === 'words' ? state.goal : state.mode === 'time' ? Math.max(220, state.goal * 3) : 500;
+  const wordCount = state.mode === 'words' ? state.goal : 1200;
   state.text = buildText(language, wordCount);
   state.textLanguage = language;
   el.typeInput.value = ''; el.typeInput.disabled = true;
@@ -351,6 +377,7 @@ function prepareText() {
 }
 
 function beginCountdown() {
+  if (online.code) { startOnline(); return; }
   if (state.phase !== 'ready') return;
   state.phase = 'countdown'; state.raceNumber++;
   el.raceNumber.textContent = `#${String(state.raceNumber).padStart(2, '0')}`;
@@ -373,7 +400,7 @@ function startRace() {
   if (state.phase !== 'countdown') return;
   clearCountdown(); state.phase = 'running'; state.startAt = performance.now();
   el.track.classList.add('is-running');
-  el.finishButton.hidden = false;
+  el.finishButton.hidden = !!online.code && online.role !== 'host';
   el.typeInput.disabled = false; el.typeInput.placeholder = 'Печатай текст выше…'; el.typeInput.focus();
   el.typingHint.textContent = 'Держи темп — соперник уже едет!';
   setStatus('ГОНКА ИДЕТ', 'running');
@@ -390,7 +417,7 @@ function tick(now) {
     return;
   }
   const rivalChars = state.elapsed * speeds[el.difficulty.value] * 5 / 60000;
-  state.rival = state.mode === 'words' ? Math.min(1, rivalChars / state.text.length) : state.mode === 'time' ? Math.min(1, state.elapsed / (state.goal * 1000)) : Math.min(1, rivalChars / 1500);
+  state.rival = state.mode === 'words' ? Math.min(1, rivalChars / state.text.length) : state.mode === 'time' ? Math.min(1, state.elapsed / (state.goal * 1000)) : Math.min(1, rivalChars / state.text.length);
   updateStats(); updateCars();
   if (state.mode === 'words' && state.rival >= 1) { finish('lost'); return; }
   if (state.mode === 'time' && state.elapsed >= state.goal * 1000) { finish(state.correct >= rivalChars ? 'won' : 'lost'); return; }
@@ -468,7 +495,13 @@ el.quickMatchButton.addEventListener('click', () => enterOnline('quick'));
 el.joinRoomButton.addEventListener('click', () => enterOnline('join'));
 el.roomCode.addEventListener('keydown', event => { if (event.key === 'Enter') enterOnline('join'); });
 el.copyRoomButton.addEventListener('click', async () => { if (!online.code) return; const url = new URL(window.location.href); url.searchParams.set('room', online.code); try { await navigator.clipboard.writeText(url.href); onlineMessage('Ссылка скопирована. Отправь ее другу.'); } catch (_) { onlineMessage(`Ссылка для друга: ${url.href}`); } });
-el.leaveRoomButton.addEventListener('click', async () => { if (online.code && online.room?.status !== 'finished') await stopOnline(false); clearOnline(); el.resultBackdrop.hidden = true; prepareText(); });
+el.leaveRoomButton.addEventListener('click', async () => {
+  if (online.code && online.room?.status !== 'finished') {
+    if (online.role === 'host') await stopOnline();
+    else try { await api(`/api/room/${online.code}/leave`, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({token:online.token})}); } catch (_) { /* Local exit still works. */ }
+  }
+  clearOnline(); el.resultBackdrop.hidden = true; prepareText();
+});
 el.soundButton.addEventListener('click', () => { state.sound = !state.sound; el.soundButton.setAttribute('aria-pressed', String(state.sound)); el.soundButton.querySelector('span').textContent = state.sound ? 'ЗВУК ВКЛ.' : 'ЗВУК ВЫКЛ.'; if (state.sound) sound(660); });
 window.addEventListener('resize', updateCars);
 prepareText();

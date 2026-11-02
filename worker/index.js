@@ -42,7 +42,7 @@ async function joinRoom(db, roomCode, name) {
   if (!room || room.status !== 'waiting' || room.guest_id || room.expires_at < Date.now()) return fail('Комната не найдена или заезд уже начался.', 404);
   const token = crypto.randomUUID();
   const now = Date.now();
-  const result = await db.prepare("UPDATE rooms SET guest_id = ?, guest_name = ?, status = 'running', started_at = ?, updated_at = ?, expires_at = ? WHERE code = ? AND status = 'waiting' AND guest_id IS NULL").bind(token, cleanName(name), now + 4000, now, now + 30 * 60 * 1000, roomCode).run();
+  const result = await db.prepare("UPDATE rooms SET guest_id = ?, guest_name = ?, status = 'ready', updated_at = ?, expires_at = ? WHERE code = ? AND status = 'waiting' AND guest_id IS NULL").bind(token, cleanName(name), now, now + 30 * 60 * 1000, roomCode).run();
   if (!result.meta?.changes) return fail('Соперник уже занял место. Попробуй другой заезд.', 409);
   return json({room: publicRoom(await getRoom(db, roomCode), token), token});
 }
@@ -72,6 +72,14 @@ async function handleRoom(request, db, roomCode, operation) {
   }
   room = await settleTimedRoom(db, room);
   if (operation === 'state' && request.method === 'GET') return json({room: publicRoom(room, token)});
+  if (operation === 'start' && request.method === 'POST') {
+    if (roleFor(room, token) !== 'host') return fail('Только создатель комнаты может начать заезд.', 403);
+    if (room.status !== 'ready' || !room.guest_id) return fail('Сначала дождись второго игрока.', 409);
+    const now = Date.now();
+    const result = await db.prepare("UPDATE rooms SET status = 'running', started_at = ?, updated_at = ? WHERE code = ? AND status = 'ready' AND guest_id IS NOT NULL").bind(now + 4000, now, roomCode).run();
+    if (!result.meta?.changes) return fail('Заезд уже запущен.', 409);
+    return json({room: publicRoom(await getRoom(db, roomCode), token)});
+  }
   if (operation === 'progress' && request.method === 'POST') {
     if (room.status !== 'running' || Date.now() < room.started_at) return fail('Заезд еще не начался или уже завершен.', 409);
     const prefix = String(data.prefix || '');
@@ -81,17 +89,29 @@ async function handleRoom(request, db, roomCode, operation) {
     const errorsColumn = role === 'host' ? 'host_errors' : 'guest_errors';
     const errors = Math.min(9999, Math.max(0, Number(data.errors) || 0));
     await db.prepare(`UPDATE rooms SET ${progressColumn} = MAX(${progressColumn}, ?), ${errorsColumn} = MAX(${errorsColumn}, ?), updated_at = ? WHERE code = ? AND status = 'running'`).bind(prefix.length, errors, Date.now(), roomCode).run();
-    if (room.mode === 'words' && prefix.length === room.text.length) {
+    if (prefix.length === room.text.length) {
       await db.prepare("UPDATE rooms SET status = 'finished', winner = ?, updated_at = ? WHERE code = ? AND status = 'running'").bind(role, Date.now(), roomCode).run();
     }
     return json({room: publicRoom(await getRoom(db, roomCode), token)});
   }
   if (operation === 'finish' && request.method === 'POST') {
+    if (roleFor(room, token) !== 'host') return fail('Только создатель комнаты может завершить заезд.', 403);
     if (room.status === 'finished') return json({room: publicRoom(room, token)});
-    const role = roleFor(room, token);
-    const winner = room.status === 'waiting' ? 'tie' : room.mode === 'free' ? (room.host_progress === room.guest_progress ? 'tie' : room.host_progress > room.guest_progress ? 'host' : 'guest') : role === 'host' ? 'guest' : 'host';
+    const winner = room.host_progress === room.guest_progress ? 'tie' : room.host_progress > room.guest_progress ? 'host' : 'guest';
     await db.prepare("UPDATE rooms SET status = 'finished', winner = ?, updated_at = ? WHERE code = ? AND status != 'finished'").bind(winner, Date.now(), roomCode).run();
     return json({room: publicRoom(await getRoom(db, roomCode), token)});
+  }
+  if (operation === 'leave' && request.method === 'POST') {
+    if (roleFor(room, token) !== 'guest') return fail('Этот выход доступен только гостю.', 403);
+    if (room.status === 'ready') {
+      await db.prepare("UPDATE rooms SET guest_id = NULL, guest_name = NULL, status = 'waiting', started_at = NULL, updated_at = ?, expires_at = ? WHERE code = ? AND status = 'ready' AND guest_id = ?").bind(Date.now(), Date.now() + 10 * 60 * 1000, roomCode, token).run();
+      return json({left: true});
+    }
+    if (room.status === 'running') {
+      await db.prepare("UPDATE rooms SET status = 'finished', winner = 'host', updated_at = ? WHERE code = ? AND status = 'running'").bind(Date.now(), roomCode).run();
+      return json({left: true});
+    }
+    return json({left: true});
   }
   return fail('Маршрут не найден.', 404);
 }
@@ -107,7 +127,7 @@ export default {
     if (!env.DB) return fail('Онлайн режим временно недоступен.', 503);
     try {
       if (path === '/api/room' && request.method === 'POST') return await handleCreate(request, env.DB);
-      const match = path.match(/^\/api\/room\/([A-Z2-9]{6})\/(state|progress|finish)$/);
+      const match = path.match(/^\/api\/room\/([A-Z2-9]{6})\/(state|start|progress|finish|leave)$/);
       if (match) return await handleRoom(request, env.DB, match[1], match[2]);
       return fail('Маршрут не найден.', 404);
     } catch (error) {

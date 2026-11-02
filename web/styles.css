@@ -15,3 +15,5 @@
 @media(max-width:700px){.online-card{padding:17px}.online-form{flex-wrap:wrap}.online-form label{flex-basis:100%}.online-form button{flex:1}.join-form{flex-wrap:wrap}.join-form label{width:100%}.join-form input{flex:1;max-width:none}.room-panel{flex-wrap:wrap}.room-panel div{width:100%}.room-panel button{flex:1}}
 @media(max-width:420px){.online-form button{font-size:9px;padding:0 8px}.join-form button{font-size:9px}}
 .start-button:disabled,.secondary-button:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+.intro{padding:26px 0 22px}.intro h1{font-size:clamp(44px,5.8vw,72px);margin:12px 0 13px;line-height:.94}.intro p{line-height:1.5;max-width:610px}.controls{margin-top:12px}.typing-card{margin-top:14px}.prompt{min-height:84px;max-height:145px}
+@media(max-width:700px){.intro{padding:24px 0 20px}.intro h1{font-size:clamp(42px,10vw,62px)}.intro p{font-size:12px}}
