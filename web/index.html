@@ -31,7 +31,7 @@
         <div class="track" id="track">
           <div class="track-glow"></div>
           <div class="lane lane-rival">
-            <div class="lane-top"><span><i class="lane-dot rival-dot"></i> СОПЕРНИК</span><span id="rivalPercent">0%</span></div>
+            <div class="lane-top"><span><i class="lane-dot rival-dot"></i> <span id="rivalName">СОПЕРНИК</span></span><span id="rivalPercent">0%</span></div>
             <div class="road"><div class="road-dashes"></div><div class="finish"></div><div class="car rival-car" id="rivalCar" aria-hidden="true"><span class="car-shadow"></span><span class="car-body"><i class="windshield"></i><i class="tail-light"></i></span></div></div>
           </div>
           <div class="lane lane-player">
@@ -56,12 +56,31 @@
         <div class="typing-foot"><span id="typingHint">Правильные символы двигают тебя вперед</span><span><b id="typedCount">0</b> / <span id="totalCount">0</span></span></div>
       </section>
 
-      <div class="controls"><button class="start-button" id="startButton" type="button"><span>НАЧАТЬ ЗАЕЗД</span><span class="button-arrow">↗</span></button><button class="secondary-button" id="newTextButton" type="button">НОВЫЙ ТЕКСТ <span>↻</span></button></div>
+      <section class="mode-card" aria-label="Режим заезда">
+        <div class="mode-title"><span class="section-index">02 / </span> ФОРМАТ ЗАЕЗДА</div>
+        <div class="mode-options" role="group" aria-label="Выберите формат заезда">
+          <button class="mode-button active" type="button" data-mode="words" aria-pressed="true">ПО СЛОВАМ</button>
+          <button class="mode-button" type="button" data-mode="time" aria-pressed="false">НА ВРЕМЯ</button>
+          <button class="mode-button" type="button" data-mode="free" aria-pressed="false">СВОБОДНЫЙ</button>
+        </div>
+        <div class="mode-detail"><label for="goal" id="goalLabel">ДИСТАНЦИЯ <select id="goal"><option value="25">25 слов</option><option value="50" selected>50 слов</option><option value="100">100 слов</option><option value="200">200 слов</option></select></label><span id="modeHint">Кто первым напечатает заданное число слов?</span><strong id="remaining" aria-live="off">50 слов</strong></div>
+      </section>
+
+      <section class="online-card" aria-label="Онлайн гонка">
+        <div class="online-head"><div><span class="section-index">03 / </span> ГОНКА С ДРУГОМ ИЛИ ОНЛАЙН</div><span class="online-badge">● LIVE</span></div>
+        <p>Создай комнату и отправь ссылку другу или найди соперника с такими же настройками. Аккаунт не нужен.</p>
+        <div class="online-form"><label>ТВОЕ ИМЯ <input id="playerName" type="text" maxlength="20" autocomplete="nickname" placeholder="Гонщик"></label><button id="createRoomButton" type="button">СОЗДАТЬ КОМНАТУ <span>↗</span></button><button id="quickMatchButton" type="button">БЫСТРЫЙ ПОИСК <span>⚡</span></button></div>
+        <div class="join-form"><label for="roomCode">КОД КОМНАТЫ</label><input id="roomCode" type="text" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="ABC123"><button id="joinRoomButton" type="button">ВОЙТИ <span>→</span></button></div>
+        <div class="room-panel" id="roomPanel" hidden><div><strong id="roomStatus">Ожидание соперника</strong><span id="roomDetails">Код комнаты: —</span></div><button id="copyRoomButton" type="button">КОПИРОВАТЬ ССЫЛКУ</button><button id="leaveRoomButton" type="button">ВЫЙТИ</button></div>
+        <div class="online-message" id="onlineMessage" role="status" aria-live="polite"></div>
+      </section>
+
+      <div class="controls"><button class="start-button" id="startButton" type="button"><span>НАЧАТЬ ЗАЕЗД</span><span class="button-arrow">↗</span></button><button class="secondary-button" id="newTextButton" type="button">НОВЫЙ ТЕКСТ <span>↻</span></button><button class="finish-button" id="finishButton" type="button" hidden>ЗАВЕРШИТЬ ЗАЕЗД <span>■</span></button></div>
       <div class="bottom-row"><div><span class="mini-icon">✦</span> Рекорд: <strong id="bestScore">—</strong></div><div class="settings"><label for="language">ЯЗЫК ТЕКСТА <select id="language"><option value="ru">RU · Русский</option><option value="en">ENG · English</option><option value="kz">KAZ · Қазақша</option></select></label><label for="difficulty">СЛОЖНОСТЬ СОПЕРНИКА <select id="difficulty"><option value="easy">Легкая</option><option value="medium" selected>Средняя</option><option value="hard">Сложная</option></select></label></div></div>
     </main>
     <footer><span>TYPE<span class="brand-accent">RACE</span> / ПЕЧАТАЙ ДО ФИНИША</span><span>СДЕЛАНО ДЛЯ ЛЮБИТЕЛЕЙ СКОРОСТИ</span></footer>
   </div>
-  <div class="result-backdrop" id="resultBackdrop" hidden><div class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-kicker" id="resultKicker">ЗАЕЗД ЗАВЕРШЕН</div><div class="result-icon" id="resultIcon">🏁</div><h2 id="resultTitle">Финиш!</h2><p id="resultText"></p><div class="result-stats"><div><strong id="resultWpm">0</strong><span>СЛ/МИН</span></div><div><strong id="resultAccuracy">100%</strong><span>ТОЧНОСТЬ</span></div><div><strong id="resultTime">0.0</strong><span>СЕКУНД</span></div></div><button class="start-button" id="againButton" type="button"><span>ЕЩЕ ЗАЕЗД</span><span class="button-arrow">↗</span></button></div></div>
+  <div class="result-backdrop" id="resultBackdrop" hidden><div class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-kicker" id="resultKicker">ЗАЕЗД ЗАВЕРШЕН</div><div class="result-icon" id="resultIcon">🏁</div><h2 id="resultTitle">Финиш!</h2><p id="resultText"></p><div class="result-stats"><div><strong id="resultWpm">0</strong><span>СЛ/МИН</span></div><div><strong id="resultAccuracy">100%</strong><span>ТОЧНОСТЬ</span></div><div><strong id="resultTime">0.0</strong><span>СЕКУНД</span></div></div><div class="result-actions"><button class="start-button" id="againButton" type="button"><span>ЕЩЕ ЗАЕЗД</span><span class="button-arrow">↗</span></button><button class="secondary-button" id="closeResultButton" type="button">ЗАКРЫТЬ РЕЗУЛЬТАТ <span>×</span></button></div></div></div>
   <script src="app.js"></script>
 </body>
 </html>
