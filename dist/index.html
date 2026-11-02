@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c1320">
+  <meta name="description" content="Печатай быстрее соперника и первым доезжай до финиша.">
+  <title>TypeRace — гонка на клавиатуре</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="TypeRace, главная"><span class="brand-mark">↗</span><span>TYPE<span class="brand-accent">RACE</span></span></a>
+      <span class="top-note"><span class="live-dot"></span> КЛАВИАТУРА — ТВОЙ ДВИГАТЕЛЬ</span>
+      <button class="sound-button" id="soundButton" type="button" aria-label="Включить звук" aria-pressed="false">♪ <span>ЗВУК ВЫКЛ.</span></button>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div class="eyebrow"><span class="eyebrow-line"></span> ГОТОВ К ЗАЕЗДУ?</div>
+        <h1>ПЕЧАТАЙ.<br><em>ОБГОНЯЙ.</em></h1>
+        <p>Каждая правильная буква двигает машину к финишу. Ошибка сбрасывает скорость. Сможешь прийти первым?</p>
+      </section>
+
+      <section class="race-card" aria-label="Гонка">
+        <div class="race-head">
+          <div class="race-label"><span class="race-label-icon">▥</span><span>ЗАЕЗД <strong id="raceNumber">#01</strong></span></div>
+          <div class="race-status" id="raceStatus"><span class="status-dot"></span> ОЖИДАНИЕ СТАРТА</div>
+        </div>
+        <div class="track" id="track">
+          <div class="track-glow"></div>
+          <div class="lane lane-rival">
+            <div class="lane-top"><span><i class="lane-dot rival-dot"></i> СОПЕРНИК</span><span id="rivalPercent">0%</span></div>
+            <div class="road"><div class="road-dashes"></div><div class="finish"></div><div class="car rival-car" id="rivalCar" aria-hidden="true"><span class="car-shadow"></span><span class="car-body"><i class="windshield"></i><i class="tail-light"></i></span></div></div>
+          </div>
+          <div class="lane lane-player">
+            <div class="lane-top"><span><i class="lane-dot player-dot"></i> ТЫ <small>· ЖМИ НА ГАЗ</small></span><span id="playerPercent">0%</span></div>
+            <div class="road"><div class="road-dashes"></div><div class="finish"></div><div class="car player-car" id="playerCar" aria-hidden="true"><span class="car-shadow"></span><span class="car-body"><i class="windshield"></i><i class="tail-light"></i></span></div></div>
+          </div>
+          <div class="track-bottom"><span>СТАРТ</span><span>ФИНИШ <b>▌▌</b></span></div>
+          <div class="countdown" id="countdown" aria-live="assertive" hidden>3</div>
+        </div>
+        <div class="dashboard">
+          <div class="stat"><span class="stat-label">СКОРОСТЬ</span><span class="stat-value"><b id="wpm">0</b><small>сл/мин</small></span></div>
+          <div class="stat"><span class="stat-label">ТОЧНОСТЬ</span><span class="stat-value"><b id="accuracy">100</b><small>%</small></span></div>
+          <div class="stat"><span class="stat-label">ОШИБКИ</span><span class="stat-value"><b id="mistakes">0</b><small>шт.</small></span></div>
+          <div class="stat"><span class="stat-label">ВРЕМЯ</span><span class="stat-value"><b id="timer">0.0</b><small>сек.</small></span></div>
+        </div>
+      </section>
+
+      <section class="typing-card" aria-label="Текст для печати">
+        <div class="typing-head"><div><span class="section-index">01 / </span> ТЕКСТ ДЛЯ ЗАЕЗДА</div><span class="level-tag">RU · <span id="difficultyLabel">СРЕДНИЙ</span></span></div>
+        <div class="prompt" id="prompt" aria-live="off"></div>
+        <div class="input-wrap" id="inputWrap"><span class="input-icon">⌨</span><input id="typeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" placeholder="Нажми «Начать заезд», затем печатай здесь" aria-label="Напечатайте показанный текст" disabled><span class="input-hint">↵</span></div>
+        <div class="typing-foot"><span id="typingHint">Правильные символы двигают тебя вперёд</span><span><b id="typedCount">0</b> / <span id="totalCount">0</span></span></div>
+      </section>
+
+      <div class="controls"><button class="start-button" id="startButton" type="button"><span>НАЧАТЬ ЗАЕЗД</span><span class="button-arrow">↗</span></button><button class="secondary-button" id="newTextButton" type="button">НОВЫЙ ТЕКСТ <span>↻</span></button></div>
+      <div class="bottom-row"><div><span class="mini-icon">✦</span> Рекорд: <strong id="bestScore">—</strong></div><label for="difficulty">СЛОЖНОСТЬ СОПЕРНИКА <select id="difficulty"><option value="easy">Лёгкая</option><option value="medium" selected>Средняя</option><option value="hard">Сложная</option></select></label></div>
+    </main>
+    <footer><span>TYPE<span class="brand-accent">RACE</span> / ПЕЧАТАЙ ДО ФИНИША</span><span>СДЕЛАНО ДЛЯ ЛЮБИТЕЛЕЙ СКОРОСТИ</span></footer>
+  </div>
+  <div class="result-backdrop" id="resultBackdrop" hidden><div class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-kicker" id="resultKicker">ЗАЕЗД ЗАВЕРШЁН</div><div class="result-icon" id="resultIcon">🏁</div><h2 id="resultTitle">Финиш!</h2><p id="resultText"></p><div class="result-stats"><div><strong id="resultWpm">0</strong><span>СЛ/МИН</span></div><div><strong id="resultAccuracy">100%</strong><span>ТОЧНОСТЬ</span></div><div><strong id="resultTime">0.0</strong><span>СЕКУНД</span></div></div><button class="start-button" id="againButton" type="button"><span>ЕЩЁ ЗАЕЗД</span><span class="button-arrow">↗</span></button></div></div>
+  <script src="app.js"></script>
+</body>
+</html>
