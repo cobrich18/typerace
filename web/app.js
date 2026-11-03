@@ -11,7 +11,25 @@ const texts = {
     'Хороший водитель смотрит далеко вперед. Хороший игрок читает следующую фразу, пока пальцы набирают текущую.',
     'Поворот уже позади. Теперь можно ускориться, но одно неверное движение напомнит, что точность важнее спешки.',
     'Трасса кажется бесконечной, пока не поймаешь ритм. Тогда каждый новый километр становится проще предыдущего.',
-    'Финишная черта приближается. Сохраняй спокойствие, не смотри на соперника и печатай так, как умеешь лучше всего.'
+    'Финишная черта приближается. Сохраняй спокойствие, не смотри на соперника и печатай так, как умеешь лучше всего.',
+    'Утренний туман медленно уходит с дороги. Первые лучи солнца освещают трассу, а гонщики готовятся к новому старту.',
+    'На пустой улице слышен только шум шин. Ты замечаешь финишный знак и прибавляешь скорость на прямом участке.',
+    'Соперник вырывается вперед, но гонка еще не окончена. Соберись, держи ровный ритм и сокращай расстояние.',
+    'После крутого поворота дорога становится шире. Здесь удобно набрать скорость и вернуть потерянные секунды.',
+    'Ветер качает деревья у трассы. Машина идет ровно, а каждая верная буква помогает двигаться дальше.',
+    'Далекие огни показывают путь к городу. До них еще много километров, поэтому лучше беречь силы и не спешить.',
+    'Первые капли дождя падают на лобовое стекло. Внимание к дороге и клавишам поможет сохранить уверенный темп.',
+    'На табло меняются цифры, пока машины проходят круг. Ты можешь улучшить результат, если будешь печатать без суеты.',
+    'Ровная дорога тянется до горизонта. Найди удобный ритм и наблюдай, как постепенно растет твоя скорость.',
+    'Механик проверил колеса перед стартом. Теперь все зависит от того, насколько точно ты пройдешь каждый участок.',
+    'Впереди показался мост через реку. За ним трасса повернет налево, и начнется решающая часть гонки.',
+    'Толпа у финиша уже слышит звук моторов. Осталось немного, так что не теряй концентрацию на последних словах.',
+    'Вечерний свет ложится на асфальт. Соперник рядом, и даже небольшая ошибка может изменить порядок машин.',
+    'Пока другие гонщики торопятся, ты выбираешь точность. Спокойные движения часто приводят к лучшему времени.',
+    'Дорога проходит мимо старых домов и тихих дворов. На этой прямой можно собраться перед новым поворотом.',
+    'Каждый заезд начинается с первого символа. Пусть следующий будет точным, а все остальные сложатся в хороший темп.',
+    'На финишной прямой нет места лишним движениям. Смотри на текст, держи руки на клавиатуре и продолжай гонку.',
+    'Даже после медленного старта можно догнать соперника. Главное не бросать попытку и постепенно находить свой ритм.'
   ],
   en: [
     'Speed comes with practice. Keep your eyes on the road, find the rhythm of the keys and do not let mistakes slow you down.',
@@ -25,7 +43,25 @@ const texts = {
     'A good driver looks far ahead. A good typist reads the next phrase while their fingers finish the current one.',
     'The turn is behind you now. You can speed up, but a single mistake may remind you that accuracy matters.',
     'The road feels endless until you find a rhythm. Then every new mile becomes a little easier than the last.',
-    'The finish line is getting closer. Stay calm, ignore the other car and type at the pace you know best.'
+    'The finish line is getting closer. Stay calm, ignore the other car and type at the pace you know best.',
+    'Morning fog lifts from the road as the first sunlight reaches the track. The drivers line up for another race.',
+    'Only the sound of tires breaks the silence on the empty street. A finish sign appears ahead on the straight.',
+    'Your rival takes the lead, but the race is far from over. Find a steady rhythm and close the gap.',
+    'The road grows wider after the sharp turn. This is your chance to pick up speed and recover lost time.',
+    'Wind moves the trees beside the track. The car holds its line while each correct letter carries it forward.',
+    'Distant lights mark the way into the city. There are many miles left, so save your energy for the finish.',
+    'The first drops of rain land on the windshield. Keep your eyes on the road and your hands on the keys.',
+    'Numbers change on the board as the cars complete another lap. A clean run can still improve your time.',
+    'A smooth road stretches toward the horizon. Settle into a comfortable rhythm and watch your speed rise.',
+    'The mechanic checked every wheel before the start. Now the result depends on your focus through each stretch.',
+    'A bridge appears over the river ahead. Beyond it, the track turns left and the final section begins.',
+    'The crowd near the finish can already hear the engines. Stay focused through the last few words of the race.',
+    'Evening light falls across the asphalt. Your rival is close, and one small mistake could change the order.',
+    'Other drivers rush to catch up, but you choose accuracy. Calm movements often lead to a better time.',
+    'The road passes old houses and quiet yards. Use this straight section to prepare for the next turn.',
+    'Every race begins with a single character. Make the next one count and build a strong pace from there.',
+    'There is no room for extra movement on the final straight. Watch the text and keep typing to the line.',
+    'A slow start does not decide the result. Keep going, find your rhythm and give yourself a chance to catch up.'
   ],
   kz: [
     'Жылдамдық жаттығумен келеді. Жолға назар аудар, пернелердің ырғағын тап және қателікке жол берме.',
@@ -39,10 +75,29 @@ const texts = {
     'Жақсы жүргізуші алдағы жолды байқайды. Жақсы ойыншы келесі сөйлемді алдын ала оқып отырады.',
     'Бұрылыс артта қалды. Енді жылдамдықты арттыр, бірақ дәлдікті ұмытпа және асығыс қателік жасама.',
     'Өз ырғағыңды тапсаң, ұзақ жол да жеңіл көрінеді. Әр жаңа шақырым саған сенім береді.',
-    'Мәре сызығы жақындап келеді. Сабыр сақта, қарсыласқа алаңдама және мәтінді анық тер.'
+    'Мәре сызығы жақындап келеді. Сабыр сақта, қарсыласқа алаңдама және мәтінді анық тер.',
+    'Таңғы тұман жолдан баяу кетіп барады. Күн сәулесі жолға түсіп, жүргізушілер жаңа жарысқа дайындалады.',
+    'Бос көшеде тек дөңгелектің дыбысы естіледі. Алда мәре белгісі көрінді, енді жылдамдықты арттыруға болады.',
+    'Қарсылас алға шықты, бірақ жарыс әлі аяқталған жоқ. Ырғағыңды сақтап, арадағы қашықтықты қысқарт.',
+    'Өткір бұрылыстан кейін жол кеңейеді. Осы жерде жылдамдықты арттырып, жоғалған уақытты қайтаруға болады.',
+    'Жел жол жиегіндегі ағаштарды тербейді. Көлік түзу жүріп келеді, ал дұрыс әріптер оны алға жылжытады.',
+    'Алыстағы шамдар қалаға баратын жолды көрсетеді. Алда әлі ұзақ сапар бар, сондықтан күшіңді сақта.',
+    'Жаңбырдың алғашқы тамшылары әйнекке түсті. Жолға да, мәтінге де мұқият қарасаң, қарқыныңды сақтайсың.',
+    'Көліктер жаңа айналымнан өткенде тақтадағы сандар өзгереді. Қатесіз терсең, нәтижеңді жақсарта аласың.',
+    'Тегіс жол көкжиекке дейін созылып жатыр. Өзіңе ыңғайлы ырғақ тауып, жылдамдығыңның өсуін байқа.',
+    'Механик жарыс алдында әр дөңгелекті тексерді. Енді нәтиже сенің зейінің мен дәлдігіңе байланысты.',
+    'Алда өзен үстіндегі көпір көрінді. Одан кейін жол солға бұрылып, жарыстың соңғы бөлігі басталады.',
+    'Мәре маңындағы жанкүйерлер мотор дыбысын естіп тұр. Соңғы сөздерге дейін назарыңды мәтіннен айырма.',
+    'Кешкі жарық жол бетіне түсіп тұр. Қарсылас жақын, бір ғана қателік көліктердің орнын өзгертуі мүмкін.',
+    'Басқа жүргізушілер асықса да, сен дәлдікті таңда. Сабырлы қимыл жиі жақсы нәтижеге жеткізеді.',
+    'Жол ескі үйлер мен тыныш аулалардың жанынан өтеді. Келесі бұрылысқа дейін өз ойыңды жинақта.',
+    'Әр жарыс бір әріптен басталады. Келесі әріпті дұрыс теріп, содан кейін тұрақты қарқын қалыптастыр.',
+    'Мәреге апаратын түзу жолда артық қимылға уақыт жоқ. Мәтінге қарап, теруді тоқтатпай жалғастыр.',
+    'Баяу басталған жарыста да қарсыласты қуып жетуге болады. Берілме, өз ырғағыңды тап және алға ұмтыл.'
   ]
 };
 const languageNames = {ru: 'RU', en: 'ENG', kz: 'KAZ'};
+const lastTextIndex = {ru: -1, en: -1, kz: -1};
 const layoutHints = {ru: 'Раскладка RU · правильные символы двигают тебя вперед', en: 'Раскладка ENG · правильные символы двигают тебя вперед', kz: 'Раскладка KAZ · используй казахскую кириллическую клавиатуру'};
 
 const $ = id => document.getElementById(id);
@@ -57,7 +112,7 @@ let audioContext;
 function buildText(language, wordCount) {
   const pool = texts[language];
   const words = [];
-  let previous = -1;
+  let previous = lastTextIndex[language];
   while (words.length < wordCount) {
     let index = Math.floor(Math.random() * pool.length);
     while (index === previous) index = Math.floor(Math.random() * pool.length);
@@ -65,6 +120,7 @@ function buildText(language, wordCount) {
     previous = index;
   }
   words.length = wordCount;
+  lastTextIndex[language] = previous;
   words[wordCount - 1] = words[wordCount - 1].replace(/[,;:.!?]+$/, '') + '.';
   return words.join(' ');
 }
