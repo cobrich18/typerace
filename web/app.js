@@ -116,6 +116,12 @@ function onlineMessage(message, error = false) {
   el.onlineMessage.classList.toggle('error', error);
 }
 
+function setStartButtonLabel(label) {
+  el.startButton.setAttribute('aria-label', label);
+  el.startButton.dataset.tooltip = label;
+  el.startButton.querySelector('.control-label').textContent = label;
+}
+
 function lockOnlineSettings(locked) {
   for (const control of [el.language, el.difficulty, el.goal, el.startButton, el.newTextButton, el.createRoomButton, el.quickMatchButton, el.joinRoomButton, ...modeButtons]) control.disabled = locked;
 }
@@ -123,7 +129,7 @@ function lockOnlineSettings(locked) {
 function showConnecting() {
   state.phase = 'connecting';
   lockOnlineSettings(true);
-  el.startButton.querySelector('span').textContent = 'ПОДКЛЮЧЕНИЕ...';
+  setStartButtonLabel('Подключение...');
   el.typingHint.textContent = 'Подключаемся к онлайн-комнате';
   onlineMessage('Подключаемся к комнате...');
 }
@@ -171,7 +177,7 @@ function applyOnlineRoom(room) {
   if (room.status === 'waiting') {
     el.roomStatus.textContent = 'Ожидание соперника';
     el.startButton.disabled = true;
-    el.startButton.querySelector('span').textContent = 'ЖДЕМ СОПЕРНИКА';
+    setStartButtonLabel('Ждем соперника');
     el.typingHint.textContent = 'Друг подключится по ссылке, затем создатель начнет заезд';
     setStatus('ЖДЕМ ВТОРОГО ИГРОКА');
     return;
@@ -179,7 +185,7 @@ function applyOnlineRoom(room) {
   if (room.status === 'ready') {
     el.roomStatus.textContent = `${el.rivalName.textContent} подключился · готов к старту`;
     el.startButton.disabled = room.role !== 'host';
-    el.startButton.querySelector('span').textContent = room.role === 'host' ? 'НАЧАТЬ ОНЛАЙН-ЗАЕЗД' : 'ЖДЕМ СТАРТА СОЗДАТЕЛЯ';
+    setStartButtonLabel(room.role === 'host' ? 'Начать онлайн-заезд' : 'Ждем старта создателя');
     el.typingHint.textContent = room.role === 'host' ? 'Нажми кнопку под трассой, когда оба готовы' : 'Создатель комнаты запустит заезд';
     setStatus(room.role === 'host' ? 'СОПЕРНИК ГОТОВ' : 'ЖДЕМ СТАРТА');
     return;
@@ -187,7 +193,7 @@ function applyOnlineRoom(room) {
   if (room.status === 'running') {
     el.roomStatus.textContent = `Гонка с ${el.rivalName.textContent}`;
     el.startButton.disabled = true;
-    el.startButton.querySelector('span').textContent = 'ОНЛАЙН-ЗАЕЗД';
+    setStartButtonLabel('Онлайн-заезд идет');
     if (state.phase === 'waiting') { state.phase = 'countdown'; state.raceNumber++; el.raceNumber.textContent = `#${String(state.raceNumber).padStart(2, '0')}`; }
     if (state.phase === 'countdown') {
       const left = room.startedAt - (Date.now() + online.clockOffset);
@@ -240,7 +246,7 @@ async function enterOnline(action) {
     online.connecting = false;
     state.phase = 'ready';
     lockOnlineSettings(false);
-    el.startButton.querySelector('span').textContent = 'НАЧАТЬ ЗАЕЗД';
+    setStartButtonLabel('Начать заезд');
     el.typingHint.textContent = layoutHints[el.language.value];
   }
 }
@@ -370,7 +376,7 @@ function prepareText() {
   el.track.classList.remove('is-running');
   el.playerCar.classList.remove('penalty'); el.inputWrap.classList.remove('error');
   el.typingHint.textContent = layoutHints[language];
-  el.startButton.querySelector('span').textContent = 'НАЧАТЬ ЗАЕЗД';
+  setStartButtonLabel('Начать заезд');
   el.startButton.disabled = false;
   setStatus('ОЖИДАНИЕ СТАРТА');
   renderPrompt(); updateStats(); updateCars(); updateBest();
