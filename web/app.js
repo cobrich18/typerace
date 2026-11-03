@@ -49,7 +49,7 @@ const $ = id => document.getElementById(id);
 const el = Object.fromEntries(['raceNumber','raceStatus','track','rivalPercent','playerPercent','rivalCar','playerCar','rivalName','countdown','wpm','accuracy','mistakes','timer','prompt','typeInput','inputWrap','typingHint','typedCount','totalCount','startButton','newTextButton','finishButton','language','languageLabel','difficulty','difficultyLabel','bestScore','soundButton','goal','goalLabel','modeHint','remaining','playerName','roomCode','createRoomButton','quickMatchButton','joinRoomButton','roomPanel','roomStatus','roomDetails','copyRoomButton','leaveRoomButton','onlineMessage','resultBackdrop','resultKicker','resultIcon','resultTitle','resultText','resultWpm','resultAccuracy','resultTime','againButton','closeResultButton'].map(id => [id, $(id)]));
 const modeButtons = [...document.querySelectorAll('[data-mode]')];
 const speeds = {easy: 33, medium: 48, hard: 65};
-const labels = {easy: 'ЛЕГКИЙ', medium: 'СРЕДНИЙ', hard: 'СЛОЖНЫЙ'};
+const labels = {easy: 'Легкий', medium: 'Средний', hard: 'Сложный'};
 const state = {phase: 'ready', mode: 'words', goal: 50, text: '', index: -1, textLanguage: null, correct: 0, errors: 0, startAt: 0, elapsed: 0, rival: 0, freezeUntil: 0, frame: 0, countdownTimer: null, raceNumber: 0, sound: false};
 const online = {code: null, token: null, role: null, room: null, pollTimer: null, syncTimer: null, busy: false, connecting: false, clockOffset: 0};
 let audioContext;
@@ -96,7 +96,7 @@ function setMode(mode) {
     button.classList.toggle('active', active);
     button.setAttribute('aria-pressed', String(active));
   }
-  el.goalLabel.firstChild.textContent = mode === 'time' ? 'ЛИМИТ ' : 'ДИСТАНЦИЯ ';
+  el.goalLabel.firstChild.textContent = mode === 'time' ? 'Лимит ' : 'Дистанция ';
   el.goal.hidden = mode === 'free';
   el.goalLabel.hidden = mode === 'free';
   el.goal.innerHTML = mode === 'time' ? '<option value="30">30 секунд</option><option value="60" selected>60 секунд</option><option value="120">120 секунд</option>' : '<option value="25">25 слов</option><option value="50" selected>50 слов</option><option value="100">100 слов</option><option value="200">200 слов</option>';
@@ -138,7 +138,7 @@ function clearOnline() {
   clearInterval(online.pollTimer); clearTimeout(online.syncTimer);
   if (online.code) { try { sessionStorage.removeItem(`typerace-room-${online.code}`); } catch (_) {} }
   online.code = null; online.token = null; online.role = null; online.room = null; online.pollTimer = null; online.connecting = false;
-  el.roomPanel.hidden = true; el.countdown.hidden = true; el.rivalName.textContent = 'СОПЕРНИК';
+  el.roomPanel.hidden = true; el.countdown.hidden = true; el.rivalName.textContent = 'Соперник';
   lockOnlineSettings(false);
   onlineMessage('');
 }
@@ -171,7 +171,7 @@ function applyOnlineRoom(room) {
   if (!online.code || room.code !== online.code) return;
   online.room = room;
   online.clockOffset = room.serverNow - Date.now();
-  el.rivalName.textContent = (room.role === 'host' ? room.guestName : room.hostName) || 'СОПЕРНИК';
+  el.rivalName.textContent = (room.role === 'host' ? room.guestName : room.hostName) || 'Соперник';
   state.rival = rivalProgress(room);
   updateCars();
   if (room.status === 'waiting') {
@@ -179,7 +179,7 @@ function applyOnlineRoom(room) {
     el.startButton.disabled = true;
     setStartButtonLabel('Ждем соперника');
     el.typingHint.textContent = 'Друг подключится по ссылке, затем создатель начнет заезд';
-    setStatus('ЖДЕМ ВТОРОГО ИГРОКА');
+    setStatus('Ждем второго игрока');
     return;
   }
   if (room.status === 'ready') {
@@ -187,7 +187,7 @@ function applyOnlineRoom(room) {
     el.startButton.disabled = room.role !== 'host';
     setStartButtonLabel(room.role === 'host' ? 'Начать онлайн-заезд' : 'Ждем старта создателя');
     el.typingHint.textContent = room.role === 'host' ? 'Нажми кнопку под трассой, когда оба готовы' : 'Создатель комнаты запустит заезд';
-    setStatus(room.role === 'host' ? 'СОПЕРНИК ГОТОВ' : 'ЖДЕМ СТАРТА');
+    setStatus(room.role === 'host' ? 'Соперник готов' : 'Ждем старта');
     return;
   }
   if (room.status === 'running') {
@@ -197,7 +197,7 @@ function applyOnlineRoom(room) {
     if (state.phase === 'waiting') { state.phase = 'countdown'; state.raceNumber++; el.raceNumber.textContent = `#${String(state.raceNumber).padStart(2, '0')}`; }
     if (state.phase === 'countdown') {
       const left = room.startedAt - (Date.now() + online.clockOffset);
-      if (left > 0) { el.countdown.hidden = false; el.countdown.textContent = Math.ceil(left / 1000); setStatus('ПРИГОТОВЬСЯ'); }
+      if (left > 0) { el.countdown.hidden = false; el.countdown.textContent = Math.ceil(left / 1000); setStatus('Приготовься'); }
       else { startRace(); state.startAt = performance.now() - Math.max(0, Date.now() + online.clockOffset - room.startedAt); }
     }
     return;
@@ -378,7 +378,7 @@ function prepareText() {
   el.typingHint.textContent = layoutHints[language];
   setStartButtonLabel('Начать заезд');
   el.startButton.disabled = false;
-  setStatus('ОЖИДАНИЕ СТАРТА');
+  setStatus('Ожидание старта');
   renderPrompt(); updateStats(); updateCars(); updateBest();
 }
 
@@ -389,7 +389,7 @@ function beginCountdown() {
   el.raceNumber.textContent = `#${String(state.raceNumber).padStart(2, '0')}`;
   el.difficulty.disabled = true; el.language.disabled = true; el.goal.disabled = true; el.startButton.disabled = true;
   el.newTextButton.disabled = true; modeButtons.forEach(button => button.disabled = true);
-  setStatus('ПРИГОТОВЬСЯ');
+  setStatus('Приготовься');
   let count = 3;
   const step = () => {
     if (state.phase !== 'countdown') return;
@@ -409,7 +409,7 @@ function startRace() {
   el.finishButton.hidden = !!online.code && online.role !== 'host';
   el.typeInput.disabled = false; el.typeInput.placeholder = 'Печатай текст выше…'; el.typeInput.focus();
   el.typingHint.textContent = 'Держи темп — соперник уже едет!';
-  setStatus('ГОНКА ИДЕТ', 'running');
+  setStatus('Гонка идет', 'running');
   state.frame = requestAnimationFrame(tick);
 }
 
@@ -418,7 +418,7 @@ function tick(now) {
   state.elapsed = now - state.startAt;
   if (online.code) {
     updateStats(); updateCars();
-    if (state.mode === 'time' && state.elapsed >= state.goal * 1000) { el.typeInput.disabled = true; setStatus('СЧИТАЕМ РЕЗУЛЬТАТ'); }
+    if (state.mode === 'time' && state.elapsed >= state.goal * 1000) { el.typeInput.disabled = true; setStatus('Считаем результат'); }
     state.frame = requestAnimationFrame(tick);
     return;
   }
@@ -439,12 +439,12 @@ function finish(outcome) {
   el.typeInput.disabled = true; el.track.classList.remove('is-running');
   el.finishButton.hidden = true;
   updateStats(); updateCars();
-  setStatus(outcome === 'won' ? 'ТЫ ПОБЕДИЛ!' : outcome === 'lost' ? 'СОПЕРНИК ФИНИШИРОВАЛ' : outcome === 'tie' ? 'НИЧЬЯ' : 'ЗАЕЗД ЗАВЕРШЕН', 'finished');
+  setStatus(outcome === 'won' ? 'Ты победил!' : outcome === 'lost' ? 'Соперник финишировал' : outcome === 'tie' ? 'Ничья' : 'Заезд завершен', 'finished');
   sound(outcome === 'won' ? 880 : 260, .22, outcome === 'won' ? 'sine' : 'triangle');
   const best = updateBest();
   const score = Number(el.wpm.textContent);
   if (outcome === 'won' && score > best) { try { localStorage.setItem(bestKey(), String(score)); } catch (_) { /* Keep the session record. */ } el.bestScore.textContent = `${score} сл/мин`; }
-  el.resultKicker.textContent = outcome === 'won' ? 'ПОБЕДА · ФИНИШНАЯ ЧЕРТА' : 'ЗАЕЗД ЗАВЕРШЕН';
+  el.resultKicker.textContent = outcome === 'won' ? 'Победа на финише' : 'Заезд завершен';
   el.resultIcon.textContent = outcome === 'won' ? '🏆' : '🏁';
   el.resultTitle.textContent = outcome === 'won' ? 'Ты первый!' : outcome === 'lost' ? 'Почти догнал!' : outcome === 'tie' ? 'Ничья!' : 'Заезд окончен';
   el.resultText.textContent = outcome === 'won' ? 'Отличный заезд. Сможешь побить свой рекорд?' : outcome === 'lost' ? 'Соперник пришел первым. Попробуй еще раз и держи ровный темп.' : outcome === 'tie' ? 'Вы финишировали с одинаковым результатом. Еще один заезд решит спор.' : 'Результат сохранен для этого заезда. Можешь выбрать другой формат и попробовать снова.';
@@ -469,7 +469,7 @@ function handleInput() {
   el.typeInput.value = state.text.slice(0, state.correct);
   renderPrompt(); updateCars(); updateStats();
   if (state.correct === state.text.length) {
-    if (online.code) { el.typeInput.disabled = true; setStatus('ОЖИДАЕМ ФИНИШ'); scheduleProgress(); }
+    if (online.code) { el.typeInput.disabled = true; setStatus('Ожидаем финиш'); scheduleProgress(); }
     else finish('won');
     return;
   }
@@ -508,7 +508,7 @@ el.leaveRoomButton.addEventListener('click', async () => {
   }
   clearOnline(); el.resultBackdrop.hidden = true; prepareText();
 });
-el.soundButton.addEventListener('click', () => { state.sound = !state.sound; el.soundButton.setAttribute('aria-pressed', String(state.sound)); el.soundButton.querySelector('span').textContent = state.sound ? 'ЗВУК ВКЛ.' : 'ЗВУК ВЫКЛ.'; if (state.sound) sound(660); });
+el.soundButton.addEventListener('click', () => { state.sound = !state.sound; el.soundButton.setAttribute('aria-pressed', String(state.sound)); el.soundButton.setAttribute('aria-label', state.sound ? 'Выключить звук' : 'Включить звук'); el.soundButton.querySelector('.sound-label').textContent = state.sound ? 'Звук включен' : 'Звук выключен'; if (state.sound) sound(660); });
 window.addEventListener('resize', updateCars);
 prepareText();
 try { el.playerName.value = localStorage.getItem('typerace-player-name') || ''; } catch (_) {}

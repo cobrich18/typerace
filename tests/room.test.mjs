@@ -77,5 +77,5 @@ assert.equal(stopped.data.room.winner, 'host');
 
 const page = await worker.fetch(new Request('https://game.example/'), env);
 assert.equal(page.status, 200);
-assert.match(await page.text(), /ГОНКА С ДРУГОМ ИЛИ ОНЛАЙН/);
+assert.match(await page.text(), /Гонка с другом/);
 console.log('Room flow, matchmaking, race results and page serving passed');
