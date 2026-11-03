@@ -46,6 +46,9 @@
           <div class="stat"><span class="stat-label">ТОЧНОСТЬ</span><span class="stat-value"><b id="accuracy">100</b><small>%</small></span></div>
           <div class="stat"><span class="stat-label">ОШИБКИ</span><span class="stat-value"><b id="mistakes">0</b><small>шт.</small></span></div>
           <div class="stat"><span class="stat-label">ВРЕМЯ</span><span class="stat-value"><b id="timer">0.0</b><small>сек.</small></span></div>
+        </div>
+        <div class="race-toolbar">
+          <div class="settings"><label for="language">ЯЗЫК ТЕКСТА <select id="language"><option value="ru">RU · Русский</option><option value="en">ENG · English</option><option value="kz">KAZ · Қазақша</option></select></label><label for="difficulty">СЛОЖНОСТЬ СОПЕРНИКА <select id="difficulty"><option value="easy">Легкая</option><option value="medium" selected>Средняя</option><option value="hard">Сложная</option></select></label></div>
           <div class="race-controls" role="group" aria-label="Управление заездом">
             <button class="race-icon-button race-icon-button-start" id="startButton" type="button" aria-label="Начать заезд" data-tooltip="Начать заезд"><span class="control-label">Начать заезд</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button>
             <button class="race-icon-button race-icon-button-restart" id="newTextButton" type="button" aria-label="Новый текст" data-tooltip="Новый текст"><span class="control-label">Новый текст</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 1-2.4-5.7M20 4v7h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -80,7 +83,7 @@
         <div class="online-message" id="onlineMessage" role="status" aria-live="polite"></div>
       </section>
 
-      <div class="bottom-row"><div><span class="mini-icon">✦</span> Рекорд: <strong id="bestScore">—</strong></div><div class="settings"><label for="language">ЯЗЫК ТЕКСТА <select id="language"><option value="ru">RU · Русский</option><option value="en">ENG · English</option><option value="kz">KAZ · Қазақша</option></select></label><label for="difficulty">СЛОЖНОСТЬ СОПЕРНИКА <select id="difficulty"><option value="easy">Легкая</option><option value="medium" selected>Средняя</option><option value="hard">Сложная</option></select></label></div></div>
+      <div class="bottom-row"><div><span class="mini-icon">✦</span> Рекорд: <strong id="bestScore">—</strong></div></div>
     </main>
     <footer><span>TYPE<span class="brand-accent">RACE</span> / ПЕЧАТАЙ ДО ФИНИША</span><span>СДЕЛАНО ДЛЯ ЛЮБИТЕЛЕЙ СКОРОСТИ</span></footer>
   </div>
